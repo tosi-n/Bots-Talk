@@ -1,0 +1,11 @@
+venv/
+data/
+.pytest_cache/
+.vscode/
+**/__pycache__/
+*.pyc
+!**/migrations/
+cache_dir
+wandb/
+/test/
+# *.md
