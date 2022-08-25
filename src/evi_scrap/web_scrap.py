@@ -1,52 +1,88 @@
-# import pandas as pd
-# from bs4 import BeautifulSoup
-# from selenium import webdriver
-# # driver = webdriver.Chrome(executable_path='/nix/path/to/webdriver/executable')
-# options = webdriver.ChromeOptions()
-# options.add_argument("--start-maximized")
-# options.add_argument('--log-level=3')
-# # Provide the path of chromedriver present on your system.
-# driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
-# driver.set_window_size(1920,1080)
-# driver.get('https://www.psychologytoday.com/us/blog/close-encounters/201410/6-myths-about-men-women-and-relationships')
-# results = []
-# content = driver.page_source
-# soup = BeautifulSoup(content)
-# for element in soup.findAll(attrs={'class': 'title'}):
-#     name = element.find('a')
-#     results.append(name.text)
-
-
-# for x in results:
-#     print(x)
-
-# df = pd.DataFrame({'text': results})
-# df.to_csv('fact_pool.csv', index=False, encoding='utf-8')
-
-# '//*[@id="block-pt-content"]/article/div[1]/div[2]/h1'
-
-# from msilib.schema import tables
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
+from urllib.request import urlopen
+
 
 # Make a request
-page = requests.get(
-    "https://www.psychologytoday.com/us/blog/close-encounters/201410/6-myths-about-men-women-and-relationships")
-soup = BeautifulSoup(page.content, 'html5lib')#html.parser
+# page = requests.get(
+#     "https://www.brides.com/how-social-media-affects-relationships-5105350")#https://www.psychologytoday.com/us/blog/close-encounters/201410/6-myths-about-men-women-and-relationships https://www.gottman.com/about/research/couples/
+# soup = BeautifulSoup(page.content, 'html.parser')# html.parser html5lib
 
-# # Extract title of page
-# page_title = soup.title.text
+sources = { 'body':'https://www.healthline.com/health/types-of-relationships#a-c', 'article':'https://www.brides.com/how-social-media-affects-relationships-5105350', 'p':'https://www.gottman.com/about/research/couples/', 'body':'https://www.psychreg.org/define-relationship-dynamics/', 'body':'https://www.universalclass.com/articles/psychology/healthy-relationship-dynamics.htm' }
+# Make a request
 
-# # Extract body of page
-# page_body = soup.body
+_id = []
+url = []
+body = []
 
-# # Extract head of page
-# page_head = soup.head
 
-# # print the result
-# print(page_body, page_head)
+for (index, (k,v)) in enumerate(sources.items()):
+    print('='*20)
+    page = urlopen(v)# 
+    soup = BeautifulSoup(page.read(), 'html.parser')# html.parser html5lib
 
-table = soup.findAll('h1', attrs={'class':'content-heading'})
 
-for row in table:
-    print(row.text)
+    table = soup.findAll([k])
+
+    for row in table:
+        _id.append(index)
+        print(index)
+        url.append(v)
+        print(v)
+        body.append(row.get_text())
+        print(row.get_text())
+
+    print('='*20)
+
+print(len(_id))
+print(len(url))
+print(len(body))
+
+df = pd.DataFrame([_id, url, body]).transpose()
+df.columns = ['_id', 'url', 'body']
+
+df.to_csv('./data/evidence_ep1.csv', sep='\t', encoding='utf-8', index=False, header=True)
+
+# [['_id', 'url', 'body']]
+
+
+# page = urlopen(
+#     "https://www.universalclass.com/articles/psychology/healthy-relationship-dynamics.htm")# 
+# soup = BeautifulSoup(page.read(), 'html.parser')# html.parser html5lib
+
+
+# table = soup.findAll(['body'])
+
+# for row in table:
+#     print(row.get_text())
+
+
+
+# from urllib.request import urlopen
+# from bs4 import BeautifulSoup
+# import re
+
+# pages = set()
+# def getLinks(pageUrl):
+#     global pages
+#     html = urlopen('http://en.wikipedia.org{}'.format(pageUrl))
+#     bs = BeautifulSoup(html, 'html.parser')
+#     try:
+#         print(bs.h1.get_text())
+#         print(bs.find(id ='mw-content-text').find_all('p')[0])
+#         print(bs.find(id='ca-edit').find('span').find('a').attrs['href'])
+    
+#     except AttributeError:
+#         print('This page is missing something! Continuing.')
+
+#     for link in bs.find_all('a', href=re.compile('^(/wiki/)')):
+#         if 'href' in link.attrs:
+#             if link.attrs['href'] not in pages:
+#             #We have encountered a new page
+#                 newPage = link.attrs['href']
+#                 print('-'*20)
+#                 print(newPage)
+#                 pages.add(newPage)
+#                 getLinks(newPage)
+# getLinks('github.com')
