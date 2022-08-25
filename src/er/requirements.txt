@@ -1,0 +1,13 @@
+numpy
+nltk
+tensorflow==1.14.0
+tensorflow-gpu==1.14.0
+matplotlib
+pandas
+gensim
+sklearn
+rank_bm25
+jupyter
+flask
+transformers
+torch 
