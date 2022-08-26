@@ -9,5 +9,5 @@ cache_dir
 wandb/
 /test/
 # *.md
-data/*
-models/*
+data/*.csv
+models/*.pkl
